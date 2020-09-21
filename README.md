@@ -1,58 +1,98 @@
+# AWS SAM With AWS CDK
 
-# Welcome to your CDK Python project!
+This is a simple api that returns a random food selection for either /veggies or /fruit.
 
-This is a blank project for Python development with CDK.
+The cloudformation is written in python using the aws-cdk library and transformed into a sam tempate. from that point the sam-cli is used to managed the stacks and local testing 
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+*NOTE: All the following shell commands are in the context of the root of the repository directory unless specified*
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the .env
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+## Requirements
 
-To manually create a virtualenv on MacOS and Linux:
+1. aws-cdk - [install](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_install)
+2. sam-cli - [install](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 
-```
-$ python3 -m venv .env
-```
+## Setup Python Environment
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+1. clone and cd into the repo
 
-```
-$ source .env/bin/activate
-```
+2. setup the python environment
 
-If you are a Windows platform, you would activate the virtualenv like this:
+    ```sh
+    python -m venv .env
+    source .env/bin/activate
+    ```
 
-```
-% .env\Scripts\activate.bat
-```
+3. install depencies
 
-Once the virtualenv is activated, you can install the required dependencies.
+    ```sh
+    pip install -r requirements.txt
+    ```
 
-```
-$ pip install -r requirements.txt
-```
+## Deploying
 
-At this point you can now synthesize the CloudFormation template for this code.
+1. transfor the cdk to a SAM cloudformation template
 
-```
-$ cdk synth
-```
+    ```sh
+    cdk synth > template.yaml
+    ```
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+2. build the sam functions
 
-## Useful commands
+    ```sh
+    sam build
+    ```
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+3. deploy the stack
 
-Enjoy!
+    ```sh
+    sam deploy
+    ```
+
+## SAM Local Tests
+
+1. transfor the cdk to a SAM cloudformation template
+
+    ```sh
+    cdk synth > template.yaml
+    ```
+
+2. build the sam functions
+
+    ```sh
+    sam build
+    ```
+
+3. test a function
+
+    ```sh
+    $ sam local invoke FruitFunction
+    ```
+
+    Output 
+
+    ```sh
+    Invoking app.lambda_handler (python3.8)
+    Image was not found.
+    Building image................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+    Failed to download a new amazon/aws-sam-cli-emulation-image-python3.8:rapid-1.0.0 image. Invoking with the already downloaded image.
+    Mounting /Users/gus/src/demo/demo-aws-sam-cdk/.aws-sam/build/FruitFunction as /var/task:ro,delegated inside runtime container
+    START RequestId: a997f24f-5b57-1163-caf3-2e96acff1dde Version: $LATEST
+    END RequestId: a997f24f-5b57-1163-caf3-2e96acff1dde
+    REPORT RequestId: a997f24f-5b57-1163-caf3-2e96acff1dde	Init Duration: 219.56 ms	Duration: 5.11 ms	Billed Duration: 100 ms	Memory Size: 128 MB	Max Memory Used: 24 MB
+
+    {"statusCode":200,"body":"{\"selection\": \"kiwi fruit\"}"}
+    ```
+
+## PyTest
+
+1. install test dependencies
+
+    ```sh
+    pip install -r requirements-dev.txt
+    ```
+
+2. run unit tests
+
+    ```sh
+    python -m pytest
+    ```
